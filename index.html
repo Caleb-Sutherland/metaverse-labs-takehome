@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GPT2 Chatbot</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="responseContainer"><p id="ouputParagraph"></p></div>
+      <div class="promptContainer">
+        <input id="inputField" placeholder="Tell me something..." />
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  // Initialize the JavaScript variable
+  let prompt = "";
+  let response = "";
+
+  // Get references to the input field and output paragraph
+  const inputField = document.getElementById("inputField");
+  const outputField = document.getElementById("ouputParagraph");
+
+  const getResponse = async () => {
+    const res = await fetch("http://localhost:8000/generate", {
+      method: "POST",
+      body: JSON.stringify({
+        prompt,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const resJson = await res.json();
+    return resJson.generated_response;
+  };
+
+  // Add event listener to capture input changes
+  inputField.addEventListener("input", function () {
+    prompt = inputField.value;
+  });
+
+  inputField.addEventListener("keydown", async function (e) {
+    if (e.keyCode === 13) {
+      response = await getResponse();
+      outputField.textContent = response;
+    }
+  });
+</script>
+
+<style>
+  body {
+    margin: 0px;
+  }
+
+  input {
+    width: 400px;
+    height: 35px;
+  }
+
+  .container {
+    position: relative;
+    background-color: lightgray;
+    height: 100vh;
+  }
+
+  .responseContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+    padding-left: 200px;
+    padding-right: 200px;
+  }
+
+  .promptContainer {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 60px;
+    width: 100%;
+  }
+</style>
